@@ -67,6 +67,12 @@ class Hash
 
 end
 
+# :: [[a,b]] -> (a..a) -> b -> [[a,b]]]
+def spread mappings, range, default_value = 0
+  spread_mappings = {}
+  mappings.each { |index,value| spread_mappings[index] = value }
+  range.map { |index| spread_mappings[index] || default_value }
+end
 
 # :: String -> [String] -> [[String]] -> None
 def write_rows file_name, names, values
