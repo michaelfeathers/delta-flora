@@ -19,9 +19,8 @@ class Repository < GitObject
   end
 
   def build_events
-    return if commits.empty?
+    return [] if commits.empty?
 
-    commit = commits.first
     new_events = []
 
     new_events << methods_for_commit(commits.first, commits.first).map {|_,m| new_event(m, commits.first, :added) }
