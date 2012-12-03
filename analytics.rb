@@ -47,7 +47,7 @@ class Array
   end
 
   def mean
-    self.reduce(:+) / self.length.to_f
+    self.reduce(0.0, :+) / self.length.to_f
   end
 
   def column n
@@ -60,6 +60,12 @@ class Array
 
 end
 
+class Hash
+  def hmap &block
+    Hash[map &block]
+  end
+
+end
 
 
 # :: String -> [String] -> [[String]] -> None
@@ -82,8 +88,8 @@ end
 # :: [event] -> [String, Int, Int]
 def ownership_effect events
   events.group_by(&:method_name).map do |method_name, method_events|
-    [method_name, \
-      method_events.map(&:committer).uniq.count, \
+    [method_name,
+      method_events.map(&:committer).uniq.count,
       method_events.map(&:method_length).max]
   end
 end
@@ -92,8 +98,7 @@ end
 def same_committer
   lambda do |es|
     es.each_cons(2)
-       .map {|b,a| (a.method_length < b.method_length && a.committer != b.committer) ? 1 : 0 }
-       .reduce(0,:+)
+      .count {|b,a| a.method_length < b.method_length && a.committer != b.committer }
   end
 end
 
@@ -101,8 +106,7 @@ end
 def different_committers
   lambda do |es|
     es.each_cons(2)
-      .map {|b,a| (a.method_length < b.method_length && a.committer == b.committer) ? 1 : 0 }
-      .reduce(0,:+)
+      .count {|b,a| a.method_length < b.method_length && a.committer == b.committer }
   end
 end
 
@@ -126,16 +130,16 @@ end
 def percent_reduction method_events
   non_deleted = method_events.select {|e| e.status != :deleted }
   return 0.0 if non_deleted.count == 0
-  num_reductions = non_deleted.each_cons(2) \
-                              .map {|before, after| after.method_length < before.method_length } \
+  num_reductions = non_deleted.each_cons(2)
+                              .map {|before, after| after.method_length < before.method_length }
                               .count(true)
   num_reductions / non_deleted.count.to_f
 end
 
 # :: [event] -> [Int]
 def refactoring_reduction_profile events
-  events.group_by(&:method_name) \
-        .map {|_,e| percent_reduction(e) } \
+  events.group_by(&:method_name)
+        .map {|_,e| percent_reduction(e) }
         .freq_by {|e| (e * 100 / 10).to_i  }
 end
 
@@ -167,7 +171,7 @@ end
 
 # :: [event] -> [String, Int, Int]
 def turbulence events
-  events.group_by(&:method_name) \
+  events.group_by(&:method_name)
         .map {|class_name,es| [class_name, es.count, es.map(&:method_length).last || 0] }
 end
 
@@ -179,40 +183,40 @@ end
 
 # :: [event] -> [Float]
 def spec_to_method_ratios_by_month events
-  events.group_by {|e| month_from_date(e.date) } \
+  events.group_by {|e| month_from_date(e.date) }
         .map {|_,es| spec_count(es).to_f / es.count }
 end
 
 # :: [event] -> [String, Float]
 def spec_percent_by_week events
-  events.group_by {|e| week_from_date(e.date) } \
+  events.group_by {|e| week_from_date(e.date) }
         .map {|week,es| [week, spec_count(es).to_f / es.count] }
 end
 
 # :: [event] -> [String, Int, Int]
 def methods_and_specs_added_by_week events
-  events.select {|e| e.status == :added } \
-        .group_by {|e| week_from_date(e.date) } \
+  events.select {|e| e.status == :added }
+        .group_by {|e| week_from_date(e.date) }
         .map {|week,es| [week, method_count(es), spec_count(es)] }
 end
 
 # :: [event] -> [String, Int, Int]
 def methods_and_specs_changed_by_week events
-  events.select {|e| e.status == :changed } \
-        .group_by {|e| week_from_date(e.date) } \
+  events.select {|e| e.status == :changed }
+        .group_by {|e| week_from_date(e.date) }
         .map {|week,es| [week, method_count(es), spec_count(es)] }
 end
 
 # :: [event] -> [String, Int, Int]
 def methods_and_specs_deleted_by_week events
-  events.select {|e| e.status == :deleted } \
-        .group_by {|e| week_from_date(e.date) } \
+  events.select {|e| e.status == :deleted }
+        .group_by {|e| week_from_date(e.date) }
         .map {|week,es| [week, method_count(es), spec_count(es)] }
 end
 
 # :: [event] -> [String, Int, Int, Int]
 def methods_profile events
-  events.group_by {|e| week_from_date(e.date) } \
+  events.group_by {|e| week_from_date(e.date) }
         .map {|week,es| [week, method_count(es, :added), method_count(es, :changed), method_count(es, :deleted)] }
 end
 
@@ -223,7 +227,7 @@ end
 
 # :: [event] -> [String, Float, Float, Float]
 def methods_profile_norm_committer events
-  events.group_by {|e| week_from_date(e.date) } \
+  events.group_by {|e| week_from_date(e.date) }
         .map {|week,es| [week, method_count(es, :added) / c_count(es).to_f, method_count(es, :changed) / c_count(es).to_f, method_count(es, :deleted) / c_count(es).to_f] }
 end
 
@@ -312,12 +316,12 @@ end
 
 # :: [event] -> [String]
 def trending_methods events
-  method_events(events).select {|e| e.status == :changed } \
-                       .group_by {|e| month_from_date(e.date) } \
-                       .to_a \
-                       .last[1] \
-                       .freq_by(&:method_name) \
-                       .sort_by {|_,count| -count } \
+  method_events(events).select {|e| e.status == :changed }
+                       .group_by {|e| month_from_date(e.date) }
+                       .to_a
+                       .last[1]
+                       .freq_by(&:method_name)
+                       .sort_by {|_,count| -count }
                        .take(10)
 end
 
@@ -335,12 +339,12 @@ end
 
 # :: [event] -> [String, Int]
 def temporal_correlation_of_classes events
-  events.group_by {|e| [e.day,e.committer]} \
-        .values \
-        .map {|e| e.map(&:class_name).uniq.combination(2).to_a } \
-        .flatten(1) \
-        .pairs \
-        .freq_by {|e| e } \
+  events.group_by {|e| [e.day,e.committer]}
+        .values
+        .map {|e| e.map(&:class_name).uniq.combination(2).to_a }
+        .flatten(1)
+        .pairs
+        .freq_by {|e| e }
         .sort_by {|p| p[1] }
 end
 
@@ -362,16 +366,14 @@ end
 
 # :: [event] -> { date => Int }
 def classes_added_by_month events
-  list = classes_by_addition_date(events).group_by {|_,date| date.month_start }
-                                         .map {|date,es| [date, es.map(&:first).uniq.count] }
-  Hash[list]
+  classes_by_addition_date(events).group_by {|_,date| date.month_start }
+                                  .hmap {|date,es| [date, es.map(&:first).uniq.count] }
 end
 
 # :: [event] -> { date => Int }
 def classes_closed_by_month events
-  list = classes_by_closure(events).group_by {|_,date| date.month_start }
-                                   .map {|date,es| [date, es.map(&:first).uniq.count] }
-  Hash[list]
+  classes_by_closure(events).group_by {|_,date| date.month_start }
+                            .hmap {|date,es| [date, es.map(&:first).uniq.count] }
 end
 
 # :: { a => b } -> { a => b } -> b -> { a => [b, b] }
@@ -420,11 +422,11 @@ end
 
 # :: [event] -> [Int]
 def freq_intercommit_durations events
-  events.map(&:date).sort \
-                    .uniq \
-                    .each_cons(2) \
-                    .map {|before,after| (after.to_i - before.to_i) / 60 } \
-                    .freq_by { |e| e / 5} \
+  events.map(&:date).sort
+                    .uniq
+                    .each_cons(2)
+                    .map {|before,after| (after.to_i - before.to_i) / 60 }
+                    .freq_by { |e| e / 5}
                     .select {|e| e[0] <= 12 * 8 }
 end
 
