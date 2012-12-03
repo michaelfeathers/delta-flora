@@ -131,8 +131,7 @@ def percent_reduction method_events
   non_deleted = method_events.select {|e| e.status != :deleted }
   return 0.0 if non_deleted.count == 0
   num_reductions = non_deleted.each_cons(2)
-                              .map {|before, after| after.method_length < before.method_length }
-                              .count(true)
+                              .count {|before, after| after.method_length < before.method_length }
   num_reductions / non_deleted.count.to_f
 end
 
