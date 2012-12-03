@@ -67,6 +67,20 @@ class Hash
 
 end
 
+
+# :: Time -> Time -> [Time]
+def month_range start_time, end_time
+  start_date = start_time.month_start.to_date
+  end_date = end_time.month_start.to_date
+  current_date = start_date
+  result = []
+  while current_date <= end_date
+    result << current_date.to_time
+    current_date = current_date.next_month
+  end
+  result
+end
+
 # :: [[a,b]] -> (a..a) -> b -> [[a,b]]]
 def spread mappings, range, default_value = 0
   spread_mappings = {}
@@ -411,7 +425,7 @@ def reduction_multiple events
   event_list = method_events(events)
   event_list.group_by {|e| e.method_name }
             .select {|_,es| es.map(&:committer).uniq.count != 1 }
-            .map {|n,es| percent_reduction(es) }
+            .map {|_,es| percent_reduction(es) }
             .mean
 end
 
@@ -420,7 +434,7 @@ def reduction_single events
   event_list = method_events(events)
   event_list.group_by {|e| e.method_name }
             .select {|_,es| es.map(&:committer).uniq.count == 1 }
-            .map {|n,es| percent_reduction(es) }
+            .map {|_,es| percent_reduction(es) }
             .mean
 end
 
