@@ -22,7 +22,7 @@ end
 
 class Array
   def freq_by &block
-    group_by(&block).map {|k,v| [k, v.count] }.sort_by {|f,_| f }
+    group_by(&block).map {|k,v| [k, v.count] }.sort_by(&:first)
   end
 
   def freq
@@ -83,9 +83,8 @@ end
 
 # :: [[a,b]] -> (a..a) -> b -> [[a,b]]]
 def spread mappings, range, default_value = 0
-  spread_mappings = {}
-  mappings.each { |index,value| spread_mappings[index] = value }
-  range.map { |index| spread_mappings[index] || default_value }
+  occupied = Hash[mappings]
+  range.map { |index| occupied[index] || default_value }
 end
 
 # :: String -> [String] -> [[String]] -> None
@@ -191,7 +190,7 @@ end
 # :: [event] -> [String, Int, Int]
 def turbulence events
   events.group_by(&:method_name)
-        .map {|class_name,es| [class_name, es.count, es.map(&:method_length).last || 0] }
+        .map {|class_name,es| [class_name, es.count, (es.last ? es.last.method_length : 0)] }
 end
 
 # :: [event] -> [Float]
@@ -363,8 +362,8 @@ def temporal_correlation_of_classes events
         .map {|e| e.map(&:class_name).uniq.combination(2).to_a }
         .flatten(1)
         .pairs
-        .freq_by {|e| e }
-        .sort_by {|p| p[1] }
+        .freq
+        .sort_by(&:second)
 end
 
 # :: [event] -> { String => date }
