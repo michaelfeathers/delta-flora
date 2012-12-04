@@ -84,7 +84,7 @@ end
 # :: [[a,b]] -> (a..a) -> b -> [[a,b]]]
 def spread mappings, range, default_value = 0
   occupied = Hash[mappings]
-  range.map { |index| occupied[index] || default_value }
+  range.map { |index| [index, occupied[index] || default_value] }
 end
 
 # :: String -> [String] -> [[String]] -> None
