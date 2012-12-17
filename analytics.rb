@@ -277,13 +277,13 @@ end
 # :: [event] -> [Float]
 def avg_lines_per_commit_by_month events
   cls_by_month = lines_added_per_commit(events).group_by {|date,_| month_from_date(date) }
-  cls_by_month.map {|_,cls| cls.map {|cl| cl[1]}.mean }.flatten
+  cls_by_month.flat_map {|_,cls| cls.map {|cl| cl[1]}.mean }
 end
 
 # :: [event] -> [Float]
 def avg_lines_per_commit_by_week events
   cls_by_month = lines_added_per_commit(events).group_by {|date,_| week_from_date(date) }
-  cls_by_month.map {|_,cls| cls.map {|cl| cl[1]}.mean }.flatten
+  cls_by_month.flat_map {|_,cls| cls.map {|cl| cl[1]}.mean }
 end
 
 # :: [event] -> [days]
@@ -371,8 +371,7 @@ end
 def temporal_correlation_of_classes events
   events.group_by {|e| [e.day,e.committer]}
         .values
-        .map {|e| e.map(&:class_name).uniq.combination(2).to_a }
-        .flatten(1)
+        .flat_map {|e| e.map(&:class_name).uniq.combination(2).to_a }
         .pairs
         .freq
         .sort_by(&:second)
