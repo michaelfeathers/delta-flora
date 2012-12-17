@@ -274,10 +274,10 @@ def lines_added_per_commit events
   events.group_by(&:commit).map {|_, es| [es.first.date, es.map(&:method_length).reduce(:+)] }
 end
 
-# :: [event] -> [Float]
+# :: [event] -> { date => Float }
 def avg_lines_per_commit_by_month events
-  cls_by_month = lines_added_per_commit(events).group_by {|date,_| month_from_date(date) }
-  cls_by_month.flat_map {|_,cls| cls.map {|cl| cl[1]}.mean }
+  cls_by_month = lines_added_per_commit(events).group_by {|date,_| date.month_start }
+  cls_by_month.hmap {|date,cls| [date, cls.map {|cl| cl[1]}.mean] }
 end
 
 # :: [event] -> [Float]
