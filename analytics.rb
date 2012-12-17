@@ -87,6 +87,18 @@ def spread mappings, range, default_value = 0
   range.map { |index| [index, occupied[index] || default_value] }
 end
 
+# :: String -> [event] -> [[date, Int]]
+def class_commit_monthly_timeline class_name, events
+  class_month_dates = events.select {|e| e.class_name == class_name }.map(&:date).map(&:month_start)
+  spread(class_month_dates.freq, month_range(class_month_dates.min, class_month_dates.max))
+end
+
+# :: [event] -> [Int]
+def aggregate_class_lifelines events
+  lifelines = method_events(events).group_by(&:class_name).map {|cn,es| class_commit_monthly_timeline(cn,es).map(&:second) }
+  lifelines.reduce {|aggregate,es| aggregate.zip(es).map { |x,y| [x || 0, y || 0] }.map {|x,y| x + y }}
+end
+
 # :: String -> [String] -> [[String]] -> None
 def write_rows file_name, names, values
   header = names.join(',') + "\n"
