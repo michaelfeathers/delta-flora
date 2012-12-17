@@ -54,9 +54,9 @@ class Array
     map {|e| e[n] }
   end
 
- def second
-   self[1]
- end
+  def second
+    self[1]
+  end
 
 end
 
@@ -420,6 +420,11 @@ def classes_lifetime events
   added = classes_added_by_month(events)
   closed = classes_closed_by_month(events)
   zip_hash(added, closed, 0)
+end
+
+# [event] -> { date -> [Float, Float] }
+def avg_method_lines_and_spec_lines_by_month events
+  zip_hash(avg_lines_per_commit_by_month(method_events(events)), avg_lines_per_commit_by_month(spec_events(events)), 0.0)
 end
 
 
