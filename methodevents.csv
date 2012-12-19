@@ -156,3 +156,7 @@ avg_lines_per_commit_by_week,fca30e951fdf507ea5b3cc7eea518ba124898c22,Michael Fe
 temporal_correlation_of_classes,fca30e951fdf507ea5b3cc7eea518ba124898c22,Michael Feathers,2012-12-17 04:34:12 -0800,analytics.rb,changed,371,378
 avg_lines_per_commit_by_month,d94e32047fe86bcd48001e545fb0d681acf65a86,Michael Feathers,2012-12-17 04:53:23 -0800,analytics.rb,changed,278,281
 avg_method_lines_and_spec_lines_by_month,1e5bf18a9343aa583956e3bf56bbf39effca3509,Michael Feathers,2012-12-17 10:37:55 -0800,analytics.rb,added,426,428
+read_events,cc34a1d1aba5a42671725ef86cdcad75c1f0652c,Michael Feathers,2012-12-19 03:11:54 -0800,reader_csv.rb,changed,5,35
+Repository::cache_good?,cac75fcea22f2d05f2b8ae044d5a9f1c7b96cade,Michael Feathers,2012-12-19 03:21:13 -0800,repository.rb,added,26,28
+Repository::event_file,cac75fcea22f2d05f2b8ae044d5a9f1c7b96cade,Michael Feathers,2012-12-19 03:21:13 -0800,repository.rb,added,30,32
+Repository::events,cac75fcea22f2d05f2b8ae044d5a9f1c7b96cade,Michael Feathers,2012-12-19 03:21:13 -0800,repository.rb,changed,13,22
