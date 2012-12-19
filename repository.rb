@@ -5,17 +5,36 @@ require './code_event'
 require './method_finder'
 require './spec_finder'
 require './writer_csv'
+require './reader_csv'
 
 class Repository < GitObject
+
+
+  def events
+    return @events if @events
+    if cache_good?
+      @events = read_events(event_file)
+    else
+      @events = build_events
+      write
+    end
+    @events
+  end
+
+private
+
+  def cache_good?
+    File.exist?(event_file) && commits.count > 0 && File.mtime(event_file) >= commits.last.date
+  end
+
+  def event_file
+    @path + "/methodevents.csv"
+  end
 
   def commits
     @commits ||= `#{git_local} log --reverse --topo-order --no-merges --format='%H\t%cn\t%cd'`
                    .split($/) \
                    .map { |line| Commit.new(@path, *line.split("\t")) }
-  end
-
-  def events
-    @events ||= build_events
   end
 
   def build_events
