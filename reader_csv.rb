@@ -6,7 +6,7 @@ def read_events file_name
   first_row = true
   names = []
   events = []
-  ::CSV.foreach(file_name + ".csv") do |row|
+  ::CSV.foreach(file_name) do |row|
     if first_row
       names = row
       first_row = false
