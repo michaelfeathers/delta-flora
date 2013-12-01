@@ -2,6 +2,17 @@
 require 'time'
 require 'date'
 
+
+def deletes_to_adds_by_hour events
+  adds_by_hour    = Hash[events.select {|e| e.status == :added }.freq_by {|e| e.date.hour }]
+  deletes_by_hour = Hash[events.select {|e| e.status == :deleted }.freq_by {|e| e.date.hour }]
+  (0..23).map do |n|
+    adds = adds_by_hour[n] || 0
+    deletes = deletes_by_hour[n] || 0
+    adds + deletes == 0 ? 0 :  (deletes.to_f / (adds + deletes)) * 100.0
+  end
+end
+
 def month_from_date date
   [date.year, date.month].to_s
 end
