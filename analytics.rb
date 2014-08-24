@@ -3,6 +3,60 @@ require 'time'
 require 'date'
 
 
+def class_name method_name
+  segments = method_name.split('::')
+  return segments[0..-2].join('::') if segments.count >= 2
+  "Object"
+end
+
+def occurrences g
+  g.second
+end
+
+def method_group_size g
+  g.first.count
+end
+
+def class_method_count g
+  g.first
+end
+
+def resp_groups events
+  es = method_events(events)
+  method_counts = Hash[es.group_by(&:class_name).map {|k,v| [k,v.map(&:method_name).uniq.count] }]
+  es.group_by {|e| [e.class_name,e.day] }
+    .map {|_,es| es.map(&:method_name).sort.uniq }
+    .freq
+    .select {|g| occurrences(g)  > 3 && method_group_size(g) > 2  }
+end
+
+
+def ordered_resp_groups events
+  es = method_events(events)
+  method_counts = Hash[es.group_by(&:class_name).map {|k,v| [k,v.map(&:method_name).uniq.count] }]
+  es.group_by {|e| [e.class_name,e.day] }
+    .map {|_,es| es.map(&:method_name).sort.uniq }
+    .freq
+    .select {|g| occurrences(g)  > 3 && method_group_size(g) > 2  }
+    .map { |g| [method_counts[class_name(g.first[0])], g] }
+    .select {|g| method_group_size(g.second) != class_method_count(g) }
+    .sort_by {|g| -(method_group_size(g.second) / class_method_count(g) * 100.0) }
+end
+
+
+def max_method_changes_per_class_per_day events
+  events.group_by(&:class_name)
+        .map {|class_name,class_events| [class_name, class_events.group_by {|e| e.day }.values.map {|v| v.map(&:method_name).uniq.count}.max] }
+end
+
+def class_names events
+  events.map(&:class_name).uniq
+end
+
+def method_names events, class_name
+  events.select {|e| e.class_name == class_name }.map(&:method_name).uniq
+end
+
 def deletes_to_adds_by_hour events
   adds_by_hour    = Hash[events.select {|e| e.status == :added }.freq_by {|e| e.date.hour }]
   deletes_by_hour = Hash[events.select {|e| e.status == :deleted }.freq_by {|e| e.date.hour }]
@@ -103,6 +157,13 @@ def class_commit_monthly_timeline class_name, events
   class_month_dates = events.select {|e| e.class_name == class_name }.map(&:date).map(&:month_start)
   spread(class_month_dates.freq, month_range(class_month_dates.min, class_month_dates.max))
 end
+
+# :: String -> [event] -> [[date, Int]]
+def file_commit_monthly_timeline file_name, events
+  file_month_dates = events.select {|e| e.file_name == file_name }.map(&:date).map(&:month_start)
+  spread(file_month_dates.freq, month_range(file_month_dates.min, file_month_dates.max))
+end
+
 
 # :: [event] -> [Int]
 def aggregate_class_lifelines events
