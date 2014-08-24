@@ -5,7 +5,7 @@ require 'date'
 
 def class_name method_name
   segments = method_name.split('::')
-  return segments[0..-2].join('::') if segments.count >= 2
+  return segments[0..-2].join('::') if segments.count > 1
   "Object"
 end
 
