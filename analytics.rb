@@ -3,6 +3,8 @@ require 'time'
 require 'date'
 
 
+# show a frequency histogram of group data using chart
+#
 # :: [[Int,Int]] -> String -> None
 def histogram freq_group, title
   upper = freq_group.map(&:first).max
@@ -11,7 +13,11 @@ def histogram freq_group, title
 end
 
 
-# [evemt] -> [[Int,Int]]
+# create a frequency histrogram of the lengths of the
+# current methods in the a repository by looking at
+# the last event for each live method
+#
+# [event] -> [[Int,Int]]
 def method_length_freq es
   es.group_by(&:method_name)
     .map {|_,v| v.last }
@@ -21,6 +27,9 @@ def method_length_freq es
 end
 
 
+# create a freq histogram of the counts of live methods
+# on all classes
+#
 # [event] -> [[Int,Int]]
 def class_method_count_freq es
   es.group_by(&:class_name)
@@ -28,11 +37,29 @@ def class_method_count_freq es
     .freq
 end
 
+
+# return the name of the class of a full Ruby method
+# name
+#
 # :: String -> String
 def class_name method_name
   segments = method_name.split('::')
   return segments[0..-2].join('::') if segments.count > 1
   "Object"
+end
+
+
+# return the names of methods on a class that
+# have changed most often on the same day.
+# Used as probe for SRP violations
+#
+# :: [event] -> [[String],Int]
+def resp_groups events
+  es = method_events(events)
+  es.group_by {|e| [e.class_name,e.day] }
+    .map {|_,es| es.map(&:method_name).sort.uniq }
+    .freq
+    .select {|g| occurrences(g)  > 3 && method_group_size(g) > 2  }
 end
 
 def occurrences g
@@ -47,28 +74,10 @@ def class_method_count g
   g.first
 end
 
-# :: [event] -> [[String],Int]
-def resp_groups events
-  es = method_events(events)
-  es.group_by {|e| [e.class_name,e.day] }
-    .map {|_,es| es.map(&:method_name).sort.uniq }
-    .freq
-    .select {|g| occurrences(g)  > 3 && method_group_size(g) > 2  }
-end
-
-
-def ordered_resp_groups events
-  es = method_events(events)
-  method_counts = Hash[es.group_by(&:class_name).map {|k,v| [k,v.map(&:method_name).uniq.count] }]
-  es.group_by {|e| [e.class_name,e.day] }
-    .map {|_,es| es.map(&:method_name).sort.uniq }
-    .freq
-    .select {|g| occurrences(g)  > 3 && method_group_size(g) > 2  }
-    .map { |g| [method_counts[class_name(g.first[0])], g] }
-    .select {|g| method_group_size(g.second) != class_method_count(g) }
-    .sort_by {|g| -(method_group_size(g.second) / class_method_count(g) * 100.0) }
-end
-
+# return array of the counts of methods that have grown
+# in size the last n times then were modified, where n
+# is the index of the array
+#
 # :: [event] -> [Int,Int]
 def methods_ascending es
   (1..Float::INFINITY).lazy
@@ -77,18 +86,15 @@ def methods_ascending es
                        .force
 end
 
+
+# Same as methods_ascending, but descehding
+#
 # :: [event] -> [Int,Int]
 def methods_descending es
   (1..Float::INFINITY).lazy
                        .map {|n| methods_descending_last_n(es,n).count }
                        .take_while {|e| e  > 0 }
                        .force
-end
-
-
-# :: [event] -> [String,Int]
-def commit_frequencies type_sym, es
-  es.group_by(&type_sym).map {|fn,v| [fn,v.map(&:commit).sort.uniq.count] }.sort_by(&:second).reverse
 end
 
 
