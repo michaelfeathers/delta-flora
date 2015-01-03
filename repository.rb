@@ -7,8 +7,12 @@ require './spec_finder'
 require './writer_csv'
 require './reader_csv'
 
-class Repository < GitObject
+def load_events path
+  Repository.new(path).events
+end
 
+
+class Repository < GitObject
 
   def events
     return @events if @events
