@@ -3,6 +3,32 @@ require 'time'
 require 'date'
 
 
+# :: [[Int,Int]] -> String -> None
+def histogram freq_group, title
+  upper = freq_group.map(&:first).max
+  values = spread(freq_group,(0..upper),0).map(&:second)
+  chart [title], values
+end
+
+
+# [evemt] -> [[Int,Int]]
+def method_length_freq es
+  es.group_by(&:method_name)
+    .map {|_,v| v.last }
+    .reject {|e| e.status == :deleted }
+    .map {|e| e.method_length }
+    .freq
+end
+
+
+# [event] -> [[Int,Int]]
+def class_method_count_freq es
+  es.group_by(&:class_name)
+    .map {|_,v| v.reject {|e| e.status == :deleted }.map(&:method_name).uniq.count }
+    .freq
+end
+
+# :: String -> String
 def class_name method_name
   segments = method_name.split('::')
   return segments[0..-2].join('::') if segments.count > 1
@@ -21,9 +47,9 @@ def class_method_count g
   g.first
 end
 
+# :: [event] -> [[String],Int]
 def resp_groups events
   es = method_events(events)
-  method_counts = Hash[es.group_by(&:class_name).map {|k,v| [k,v.map(&:method_name).uniq.count] }]
   es.group_by {|e| [e.class_name,e.day] }
     .map {|_,es| es.map(&:method_name).sort.uniq }
     .freq
@@ -42,6 +68,29 @@ def ordered_resp_groups events
     .select {|g| method_group_size(g.second) != class_method_count(g) }
     .sort_by {|g| -(method_group_size(g.second) / class_method_count(g) * 100.0) }
 end
+
+# :: [event] -> [Int,Int]
+def methods_ascending es
+  (1..Float::INFINITY).lazy
+                       .map {|n| methods_ascending_last_n(es,n).count }
+                       .take_while {|e| e  > 0 }
+                       .force
+end
+
+# :: [event] -> [Int,Int]
+def methods_descending es
+  (1..Float::INFINITY).lazy
+                       .map {|n| methods_descending_last_n(es,n).count }
+                       .take_while {|e| e  > 0 }
+                       .force
+end
+
+
+# :: [event] -> [String,Int]
+def commit_frequencies type_sym, es
+  es.group_by(&type_sym).map {|fn,v| [fn,v.map(&:commit).sort.uniq.count] }.sort_by(&:second).reverse
+end
+
 
 
 def max_method_changes_per_class_per_day events
@@ -100,6 +149,10 @@ class Array
 
   def ascends?
     each_cons(2).all? {|l,r| l < r }
+  end
+
+  def descends?
+    each_cons(2).all? {|l,r| l > r }
   end
 
   def adjusted_to len
@@ -435,9 +488,17 @@ end
 # :: [event] -> Int -> [String]
 def methods_ascending_last_n events, n
   methods_by(method_events(events)) do |es|
-    es.count >= n && es.last(n).map(&:method_length).ascends?
+    es.count > 1 && es.count >= n && es.last(n + 1).map(&:method_length).ascends?
   end.keys
 end
+
+# :: [event] -> Int -> [String]
+def methods_descending_last_n events, n
+  methods_by(method_events(events)) do |es|
+    es.count > 1 && es.count >= n && es.last(n + 1).map(&:method_length).descends?
+  end.keys
+end
+
 
 # :: [event] -> [String, Int]
 def temporal_correlation_of_classes events
