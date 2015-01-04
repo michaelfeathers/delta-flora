@@ -16,9 +16,7 @@ module DeltaFlora
     end
 
     def changed? other_method
-      return true if body_length != other_method.body_length
-      return true if normalized(src) != normalized(other_method.src)
-      false
+      normalized(src) != normalized(other_method.src)
     end
 
     private

@@ -25,20 +25,23 @@ class Repository < GitObject
     @events
   end
 
-private
-
-  def cache_good?
-    File.exist?(event_file) && commits.count > 0 && File.mtime(event_file) >= commits.last.date
-  end
-
-  def event_file
-    @path + "/methodevents.csv"
-  end
-
   def commits
     @commits ||= `#{git_local} log --reverse --topo-order --no-merges --format='%H\t%cn\t%cd'`
                    .split($/) \
                    .map { |line| Commit.new(@path, *line.split("\t")) }
+  end
+
+
+private
+
+  def cache_good?
+    File.exist?(event_file) &&
+      commits.count > 0 &&
+      File.mtime(event_file) >= commits.sort(&:date).last.date
+  end
+
+  def event_file
+    @path + "/methodevents.csv"
   end
 
   def build_events

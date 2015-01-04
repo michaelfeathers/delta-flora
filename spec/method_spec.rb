@@ -39,9 +39,6 @@ describe Method do
       .should be_false
   end
 
-  # should this return changed on witespace change?
-  # original idea was to do length check in body
-  # as a optimzation
   it 'detects change on different sized text' do
     with_source("this and that", 0, 0)
       .changed?(with_source(" this and that", 0, 0))
@@ -53,8 +50,6 @@ describe Method do
       .changed?(with_source("this and that", 0, 0))
       .should be_false
   end
-
-
 
 end
 
