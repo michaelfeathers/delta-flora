@@ -37,7 +37,6 @@ describe Method do
     with_source("this and that", 0, 0)
       .changed?(with_source("this and that", 0, 0))
       .should be_false
-
   end
 
   # should this return changed on witespace change?
