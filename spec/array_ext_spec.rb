@@ -1,6 +1,6 @@
 
 
-require 'analytics'
+require 'array_ext'
 
 describe Array do
 
