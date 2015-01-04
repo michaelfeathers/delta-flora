@@ -174,6 +174,10 @@ class Array
     self.reduce(0.0, :+) / self.length.to_f
   end
 
+  def sorted?
+    each_cons(2).all? {|x,y| x <= y }
+  end
+
   def column n
     map {|e| e[n] }
   end
