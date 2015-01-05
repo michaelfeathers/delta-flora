@@ -37,7 +37,7 @@ private
   def cache_good?
     File.exist?(event_file) &&
       commits.count > 0 &&
-      File.mtime(event_file) >= commits.sort(&:date).last.date
+      File.mtime(event_file) >= commits.last.date
   end
 
   def event_file
