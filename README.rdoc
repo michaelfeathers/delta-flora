@@ -18,9 +18,10 @@ Here is an example use of delta-flora with irb:
 
 The value held in es after this call is an array of `method events'. Each method
 event describes an occurrence in the lifetime of a method. There are three types
-of method event: added, changed, deleted. Regardless of their time, each event
+of method event: added, changed, deleted. Regardless of their type, each event
 contains the following information:
 
+* type - added, changed, deleted
 * commit - sha1 of the git commit for the code change
 * date - date of the commit
 * file_name - name of the file containing the method
