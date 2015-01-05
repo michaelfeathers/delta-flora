@@ -11,7 +11,7 @@ It consists of a class named Repository which builds up an intermediate
 representation of all of the histories of all Ruby class and method changes
 in a git repo.
 
-Here is an example use of delta-flora with irb:
+Here is an example use of delta-flora in irb:
 
   2.0.0p0 :001 > load 'repository.rb'
   2.0.0p0 :002 > es = Repository.new('/Users/joe-shmoe/Projects/rails').events
@@ -21,7 +21,7 @@ event describes an occurrence in the lifetime of a method. There are three types
 of method event: added, changed, deleted. Regardless of their type, each event
 contains the following information:
 
-* type - added, changed, deleted
+* type - added, changed, or deleted
 * commit - sha1 of the git commit for the code change
 * date - date of the commit
 * file_name - name of the file containing the method
@@ -61,14 +61,16 @@ you can expect 'runs' of events within branches to be date ordered.
 
 == USAGE:
 
-Use of Delta-flora is very easy. The steps in the description should get you
-started. It's important to note, however, that the first time you run
-delta-flora on a repository it takes considerable to time rip the respository and
-produce the method events. To make things easier, the Repository class has
-been designed to check for a file named methodevents.csv in the repository
-directory. It if exists and there are no commits with a later datestamp in
-the repo, then methodevents.csv is assumed to be current and it is loaded.
-If methodevents.csv does not exist or it is out of date, Repository rips the
+Use of delta-flora is easy. The steps in the description should get you
+started. But, it's important to note that the first time you run
+delta-flora on a repo it takes considerable amount of time rip the repo and
+produce method events.
+
+To make use easier, the Repository class has been designe to check for
+a file named methodevents.csv in the repository directory. If it exists
+and there are no commits with a later datestamp in the repo, then
+methodevents.csv is assumed to be current and it is loaded. If
+methodevents.csv does not exist or it is out of date, Repository rips the
 repo and produces a methodevents.csv file.
 
 Since 'es = Repository.new('some repostory path').events is a bit of a mouthful,
@@ -80,10 +82,10 @@ delta-flora supplies a convenience method that has the same effect:
 == NAMING:
 
 `Delta Flora' is the name of an album by Hughscore - a group formed by the late
-Hugh Hopper of Soft Machine. The name struck me because it literally means a
+Hugh Hopper of Soft Machine. The name struck me because it literally means the
 flowering/bountiful mouth of a river. That seemed like a good name for a tool
 that produces useful information from repositories. Aside from that, the pun
-on the word delta with regard to version control systems was too good to
+on the word `delta' with regard to version control systems was too good to
 pass up.
 
 
