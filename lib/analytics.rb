@@ -28,13 +28,13 @@ def method_length_freq es
 end
 
 
-# create a freq histogram of the counts of live methods
+# create a freq histogram of the counts of historical methods
 # on all classes
 #
 # [event] -> [[Int,Int]]
 def class_method_count_freq es
   es.group_by(&:class_name)
-    .map {|_,v| v.reject {|e| e.status == :deleted }.map(&:method_name).uniq.count }
+    .map {|_,v| v.map(&:method_name).uniq.count }
     .freq
 end
 
