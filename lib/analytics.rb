@@ -1,7 +1,7 @@
 
 require 'time'
 require 'date'
-require 'array_ext'
+require './array_ext'
 
 
 # show a frequency histogram of group data using chart
