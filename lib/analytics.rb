@@ -4,21 +4,36 @@ require 'date'
 require './array_ext'
 
 
+# array of the start times of each month a class has been changed
+#
 # :: [event] -> String -> [Time]
 def class_months events, class_name
   method_events(events).select {|e| e.class_name == class_name }.map {|e|e.date.month_start }.uniq.sort
 end
 
+# percentage of months a class has been active during its lifetime
+#
 # :: [event] -> String -> Float
 def percent_active events, class_name
   range = class_months(events, class_name)
   range.count.to_f / month_range(range.first, range.last).count.to_f * 100.0
 end
 
+# percent_active for classes that have been alive for at least four months
 #
+# :: [event] -> [Float,String]
 def activity_list es
   class_names = es.map(&:class_name).uniq.select {|cn| class_months(es, cn).count >= 4 }
   class_names.map {|cn| [percent_active(es, cn), cn] }.sort_by(&:first).reverse
+end
+
+# create a string that shows the activity in the timeline of a class
+#
+# :: [event] -> String -> String
+def class_lifeline_ticker es, class_name
+  active_months = class_months(es, class_name)
+  range = month_range(active_months.first, active_months.last)
+  range.map {|mo| active_months.include?(mo) ? "*" : "." }.join
 end
 
 # show a frequency histogram of group data using chart
