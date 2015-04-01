@@ -36,6 +36,14 @@ def class_lifeline_ticker es, class_name
   range.map {|mo| active_months.include?(mo) ? "*" : "." }.join
 end
 
+# create class_lifeline tickers for all classes
+#
+# :: [event] -> [String,String]
+def class_tickers es
+  class_names = es.map(&:class_name).uniq
+  class_names.map {|cn| [cn,class_lifeline_ticker(es, cn)] }.sort_by {|line| line.length }.reverse
+end
+
 # show a frequency histogram of group data using chart
 #
 # :: [[Int,Int]] -> String -> None
