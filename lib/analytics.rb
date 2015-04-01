@@ -4,6 +4,23 @@ require 'date'
 require './array_ext'
 
 
+# :: [event] -> String -> [Time]
+def class_months events, class_name
+  method_events(events).select {|e| e.class_name == class_name }.map {|e|e.date.month_start }.uniq.sort
+end
+
+# :: [event] -> String -> Float
+def percent_active events, class_name
+  range = class_months(events, class_name)
+  range.count.to_f / month_range(range.first, range.last).count.to_f * 100.0
+end
+
+#
+def activity_list es
+  class_names = es.map(&:class_name).uniq.select {|cn| class_months(es, cn).count >= 4 }
+  class_names.map {|cn| [percent_active(es, cn), cn] }.sort_by(&:first).reverse
+end
+
 # show a frequency histogram of group data using chart
 #
 # :: [[Int,Int]] -> String -> None
