@@ -16,7 +16,7 @@ end
 # :: [event] -> String -> Float
 def percent_active events, class_name
   range = class_months(events, class_name)
-  range.count.to_f / month_range(range.first, range.last).count.to_f * 100.0
+  range.count.to_f / month_range(range.first, Time::now.month_start).count.to_f * 100.0
 end
 
 # percent_active for classes that have been alive for at least four months
@@ -32,7 +32,7 @@ end
 # :: [event] -> String -> String
 def class_lifeline_ticker es, class_name
   active_months = class_months(es, class_name)
-  range = month_range(active_months.first, active_months.last)
+  range = month_range(active_months.first, Time::now.month_start)
   range.map {|mo| active_months.include?(mo) ? "*" : "." }.join
 end
 
