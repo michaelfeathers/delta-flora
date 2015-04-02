@@ -4,6 +4,17 @@ require 'date'
 require './array_ext'
 
 
+# return a line that represents increases, decreases, and stable changes in a method's length
+#
+# :: [event] -> String -> String
+def method_delta_line es, method_name
+  es.select {|e| e.method_name == method_name }
+    .map(&:method_length)
+    .each_cons(2)
+    .map {|c,n| ["^","v","-"][(c <=> n) + 1] }
+    .join
+end
+
 # return a sorted array of the methods that have changed thoe most
 #
 # :: [event] -> [String,Int]
