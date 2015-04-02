@@ -7,18 +7,18 @@ require './array_ext'
 # array of the start times of each month a class has been changed
 #
 # :: [event] -> String -> [Time]
-def class_months events, class_name
-  method_events(events).select {|e| e.class_name == class_name }
-                       .map {|e|e.date.month_start }
-                       .uniq
-                       .sort
+def class_months es, class_name
+  es.select {|e| e.class_name == class_name }
+    .map {|e|e.date.month_start }
+    .uniq
+    .sort
 end
 
 # percentage of months a class has been active during its lifetime
 #
 # :: [event] -> String -> Float
-def percent_active events, class_name
-  range = class_months(events, class_name)
+def percent_active es, class_name
+  range = class_months(es, class_name)
   range.count.to_f / month_range(range.first, Time::now.month_start).count.to_f * 100.0
 end
 
