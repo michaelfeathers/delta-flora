@@ -4,6 +4,13 @@ require 'date'
 require './array_ext'
 
 
+# return the month of the last commit to a set of events
+#
+# :: [event] -> Time
+def last_commit_month es
+  es.map {|e| e.date.month_start }.sort.last
+end
+
 # array of the start times of each month a class has been changed
 #
 # :: [event] -> String -> [Time]
@@ -17,9 +24,9 @@ end
 # percentage of months a class has been active during its lifetime
 #
 # :: [event] -> String -> Float
-def percent_active es, class_name
+def percent_active es, class_name, upto_date = Time.now.month_start
   range = class_months(es, class_name)
-  range.count.to_f / month_range(range.first, Time::now.month_start).count.to_f * 100.0
+  range.count.to_f / month_range(range.first, upto_date).count.to_f * 100.0
 end
 
 # percent_active for classes that have been alive for at least four months
@@ -27,7 +34,8 @@ end
 # :: [event] -> [Float,String]
 def activity_list es
   class_names = es.map(&:class_name).uniq.select {|cn| class_months(es, cn).count >= 4 }
-  class_names.map {|cn| [percent_active(es, cn), cn] }
+  last_date = last_commit_month(es)
+  class_names.map {|cn| [percent_active(es, cn, last_date), cn] }
              .sort_by(&:first)
              .reverse
 end
@@ -35,9 +43,9 @@ end
 # create a string that shows the activity in the timeline of a class
 #
 # :: [event] -> String -> String
-def class_lifeline_ticker es, class_name
+def class_lifeline_ticker es, class_name, upto_date = Time.now.month_start
   active_months = class_months(es, class_name)
-  range = month_range(active_months.first, Time::now.month_start)
+  range = month_range(active_months.first, upto_date)
   range.map {|mo| active_months.include?(mo) ? "*" : "." }.join
 end
 
@@ -46,7 +54,8 @@ end
 # :: [event] -> [String,String]
 def class_tickers es
   class_names = es.map(&:class_name).uniq
-  class_names.map {|cn| [cn,class_lifeline_ticker(es, cn)] }
+  last_date = last_commit_month(es)
+  class_names.map {|cn| [cn,class_lifeline_ticker(es, cn, last_date)] }
              .sort_by {|line| line.length }
              .reverse
 end
