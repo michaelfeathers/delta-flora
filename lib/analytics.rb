@@ -4,6 +4,15 @@ require 'date'
 require './array_ext'
 
 
+# return a sorted array of the methods that have changed thoe most
+#
+# :: [event] -> [String,Int]
+def method_churns es
+  method_events(es).freq_by(&:method_name)
+                   .sort_by(&:second)
+                   .reverse
+end
+
 # return the month of the last commit to a set of events
 #
 # :: [event] -> Time
