@@ -8,7 +8,8 @@ require './array_ext'
 #
 # :: [event] -> [String,Int]
 def method_churns es
-  method_events(es).freq_by(&:method_name)
+  method_events(es).select {|e| e.status == :changed }
+                   .freq_by(&:method_name)
                    .sort_by(&:second)
                    .reverse
 end
