@@ -8,7 +8,10 @@ require './array_ext'
 #
 # :: [event] -> String -> [Time]
 def class_months events, class_name
-  method_events(events).select {|e| e.class_name == class_name }.map {|e|e.date.month_start }.uniq.sort
+  method_events(events).select {|e| e.class_name == class_name }
+                       .map {|e|e.date.month_start }
+                       .uniq
+                       .sort
 end
 
 # percentage of months a class has been active during its lifetime
@@ -24,7 +27,9 @@ end
 # :: [event] -> [Float,String]
 def activity_list es
   class_names = es.map(&:class_name).uniq.select {|cn| class_months(es, cn).count >= 4 }
-  class_names.map {|cn| [percent_active(es, cn), cn] }.sort_by(&:first).reverse
+  class_names.map {|cn| [percent_active(es, cn), cn] }
+             .sort_by(&:first)
+             .reverse
 end
 
 # create a string that shows the activity in the timeline of a class
@@ -41,7 +46,9 @@ end
 # :: [event] -> [String,String]
 def class_tickers es
   class_names = es.map(&:class_name).uniq
-  class_names.map {|cn| [cn,class_lifeline_ticker(es, cn)] }.sort_by {|line| line.length }.reverse
+  class_names.map {|cn| [cn,class_lifeline_ticker(es, cn)] }
+             .sort_by {|line| line.length }
+             .reverse
 end
 
 # show a frequency histogram of group data using chart
@@ -150,7 +157,9 @@ def class_names events
 end
 
 def method_names events, class_name
-  events.select {|e| e.class_name == class_name }.map(&:method_name).uniq
+  events.select {|e| e.class_name == class_name }
+        .map(&:method_name)
+        .uniq
 end
 
 def deletes_to_adds_by_hour events
