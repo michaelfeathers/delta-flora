@@ -11,7 +11,7 @@ def method_delta_line es, method_name
   es.select {|e| e.method_name == method_name }
     .map(&:method_length)
     .each_cons(2)
-    .map {|c,n| ["^","v","-"][(c <=> n) + 1] }
+    .map {|c,n| ["^","-","v"][(c <=> n) + 1] }
     .join
 end
 
@@ -135,21 +135,10 @@ end
 def resp_groups events
   es = method_events(events)
   es.group_by {|e| [e.class_name,e.day] }
-    .map {|_,es| es.map(&:method_name).sort.uniq }
+    .map {|_,es| es.map(&:method_name).uniq.sort }
     .freq
-    .select {|g| occurrences(g)  > 3 && method_group_size(g) > 2  }
-end
-
-def occurrences g
-  g.second
-end
-
-def method_group_size g
-  g.first.count
-end
-
-def class_method_count g
-  g.first
+    .select {|g| g.second >= 4 }         # occurrences
+    .select {|g| g.first.count >= 3 }    # method group size
 end
 
 # return array of the counts of methods that have grown
