@@ -4,6 +4,15 @@ require 'date'
 require './array_ext'
 
 
+# return the number of contiguous spans of non-zeros in an array
+#
+# :: [Integer] -> Integer
+def span_count ary
+  return 0 if ary.empty?
+  flat = ary.map {|e| e == 0 ? 0 : 1 }
+  flat.first + flat.each_cons(2).count {|left,right| left < right }
+end
+
 # return a line that represents increases, decreases, and stable changes in a method's length
 #
 # :: [event] -> String -> String
