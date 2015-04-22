@@ -25,7 +25,7 @@ class MethodShark
 
   def initialize(path, method_name)
     @method_name = method_name
-    @events = read_events(path + "/methodevents.csv`")
+    @events = read_events(path + "/methodevents.csv")
   end
 
   def selected_events
