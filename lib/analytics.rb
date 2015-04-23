@@ -3,6 +3,15 @@ require 'time'
 require 'date'
 require './array_ext'
 
+# return events reflecting the current source of a class
+#
+# :: [event] -> [event]
+def class_current_state es, class_name
+  es.select {|e| e.class_name == class_name }
+    .group_by(&:method_name)
+    .reject {|_,es| es.last.status == :deleted }
+    .map {|e| e[1].last }
+end
 
 # return the number of contiguous spans of non-zeros in an array
 #
