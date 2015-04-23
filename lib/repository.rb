@@ -109,11 +109,12 @@ private
                    file_name: method.file_name,
                    method_length: (status == :deleted ? 0 : method.body_length),
                    start_line: method.start_line,
-                   end_line: method.end_line)
+                   end_line: method.end_line,
+                   repo_path: @path)
    end
 
    def write
-     write_events(@path + "/methodevents", ["method_name", "commit", "committer", "date", "file_name", "status", "start_line", "end_line"], events)
+     write_events(@path + "/methodevents", ["method_name", "commit", "committer", "date", "file_name", "status", "start_line", "end_line", "repo_path"], events)
    end
 
 end

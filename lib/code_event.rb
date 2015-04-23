@@ -1,4 +1,6 @@
 
+require 'ripper'
+
 class CodeEvent
 
   def initialize(hash = {})
@@ -6,6 +8,29 @@ class CodeEvent
       define_attribute(attr)
       self.send(writer_for(attr), value)
     end
+  end
+
+  def method_body
+    return "" if status == :deleted
+    @src ||= `#{git_local} show #{commit}:#{file_name}`.lines
+                                                       .to_a[(start_line-1)..(end_line-1)]
+                                                       .join
+  end
+
+  def method_tokens
+    Ripper.tokenize(method_body)
+  end
+
+  def method_score tokens
+    (method_tokens.uniq & tokens).count
+  end
+
+  def method_complexity
+    method_score(["if","else","elsif","unless"])
+  end
+
+  def method_functional_score
+    method_score(Enumerable.public_instance_methods.map(&:to_s))
   end
 
   def class_name
@@ -32,7 +57,11 @@ class CodeEvent
   end
 
 private
-  def define_attribute(attr)
+  def git_local
+    "git --git-dir=#{repo_path}/.git"
+  end
+
+ def define_attribute(attr)
     singleton_class.send(:public)
     singleton_class.send(:attr_accessor, attr)
   end
