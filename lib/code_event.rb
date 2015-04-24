@@ -22,7 +22,7 @@ class CodeEvent
   end
 
   def method_score tokens
-    (method_tokens.uniq & tokens).count
+    method_tokens.uniq.count {|t| tokens.include?(t) }
   end
 
   def method_complexity
@@ -46,7 +46,6 @@ class CodeEvent
   def method_length
     end_line - start_line
   end
-
 
   def inspect
     to_s
