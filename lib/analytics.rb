@@ -3,6 +3,15 @@ require 'time'
 require 'date'
 require './array_ext'
 
+
+# create a text list of all bodies for a method
+#
+# :: [event] -> String -> String
+def method_shark es, method_name
+  es.select {|e| e.method_name == method_name }
+    .map {|e| "\n\n\n#{e.date}\n\n#{e.method_body}" }
+end
+
 # return events reflecting the current source of a class
 #
 # :: [event] -> [event]
