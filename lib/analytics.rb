@@ -161,7 +161,7 @@ end
 
 # return array of the counts of methods that have grown
 # in size the last n times then were modified, where n
-# is the index of the array
+# is the index of the array minus one
 #
 # :: [event] -> [Int,Int]
 def methods_ascending es
