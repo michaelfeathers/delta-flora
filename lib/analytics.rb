@@ -4,6 +4,42 @@ require 'date'
 require './array_ext'
 
 
+# analog to Haskell's iterate function
+#
+# [T] -> (T -> T) -> Enumerator
+def iterate seed, &block
+  Enumerator.new do |e|
+    current = seed
+    loop do
+      e << current
+      current = yield current
+    end
+  end
+end
+
+
+# convolution to smooth data
+#
+# :: [Numeric] -> [Numeric]
+def smooth ary
+  return [] if ary.empty?
+  ([ary.first] + ary + [ary.last]).each_cons(3)
+                                  .map {|l,m,r| (l+2.0*m+r)/4.0 }
+end
+
+# create a timeline of the sizes a class has had
+#
+# :: [event] -> String -> [Int]
+def class_trajectory es, class_name
+  c = {}
+  es.select {|e| e.class_name == class_name }
+    .group_by(&:commit)
+    .map do |_,es|
+      es.each { |e| c[e.method_name] = e }
+      c.values.map {|e| e.status == :deleted ? 0 : e.method_length }.reduce(:+, 0)
+    end
+end
+
 # create a text list of all bodies for a method
 #
 # :: [event] -> String -> String
@@ -26,8 +62,9 @@ end
 #
 # :: [Integer] -> Integer
 def span_count ary
-  ([false] + ary.map {|e| e != 0 }).each_cons(2)
-                                   .count {|c,n| !c && n }
+  ([0] + ary).lazy
+             .each_cons(2)
+             .count{|c,n| c == 0 && n != 0 }
 end
 
 # return a line that represents increases, decreases, and stable changes in a method's length
