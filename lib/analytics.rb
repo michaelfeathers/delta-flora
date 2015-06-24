@@ -18,13 +18,30 @@ def iterate seed, &block
 end
 
 
+# image sharpener coded for 1D data
+#
+# [Numeric] -> [Numeric]
+def sharpen ary
+  edge_extend(ary).each_cons(3)
+                  .map {|l,m,r| [0, (-1.0*l + 5.0*m + -1.0*r)].max }
+end
+
+
 # convolution to smooth data
 #
 # :: [Numeric] -> [Numeric]
 def smooth ary
+  edge_extend(ary).each_cons(3)
+                  .map {|l,m,r| (l+2.0*m+r)/4.0 }
+end
+
+
+# extend both sides of an array for convolution algorithms
+#
+# :: [Numeric] -> [Numeric]
+def edge_extend ary
   return [] if ary.empty?
-  ([ary.first] + ary + [ary.last]).each_cons(3)
-                                  .map {|l,m,r| (l+2.0*m+r)/4.0 }
+  ([ary.first] + ary + [ary.last])
 end
 
 # create a timeline of the sizes a class has had
