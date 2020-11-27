@@ -46,10 +46,6 @@ of the classes by the number of methods they contain:
   end
 ```
 
-This function accepts a list of events and groups them by the names of the classes they are
-associated with. It then uses an array extension method named *freq* to produce frequencies of 
-these counts and returns them as a sorted list.
-
 Let's do that analysis:
 
 ```ruby
@@ -76,11 +72,11 @@ started. But, it's important to note that the first time you run
 delta-flora on a repo it takes considerable amount of time rip the repo and
 produce method events.
 
-To make use easier, the Repository class has been designe to check for
-a file named methodevents.csv in the repository directory. If it exists
+To make use easier, the *Repository* class has been designed to check for
+a file named *methodevents.csv* in the repository directory. If it exists
 and there are no commits with a later datestamp in the repo, then
-methodevents.csv is assumed to be current and it is loaded. If
-methodevents.csv does not exist or it is out of date, Repository rips the
+*methodevents.csv* is assumed to be current and it is loaded. If
+*methodevents.csv* does not exist or it is out of date, *Repository* rips the
 repo and produces a *methodevents.csv* file.
 
 
@@ -103,7 +99,7 @@ pass up.
 
 ## REQUIREMENTS
 
-* Ruby 2.0
+* Ruby 2.0 or greater
 
 ## LICENSE
 
