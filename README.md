@@ -6,21 +6,19 @@
 Delta-flora is set of classes and functions which enable interactive analysis
 of Ruby code histories in an interactive Ruby shell.
 
-It consists of a class named Repository which builds up an intermediate
-representation of all of the histories of all Ruby class and method changes
-in a git repo.
-
-Here is an example use of delta-flora in irb:
+The primary class is named *Repository*. It builds a representation of the history
+of all Ruby method changes in a repository. These changes are called *events*. 
+You can access them in irb like this:
 
 ```ruby
   2.0.0p0 :001 > load 'repository.rb'
   2.0.0p0 :002 > es = Repository.new('/Users/joe-shmoe/Projects/rails').events
 ```
 
-The value held in es after this call is an array of `method events'. Each method
-event describes an occurrence in the lifetime of a method. There are three types
-of method event: added, changed, deleted. Regardless of their type, each event
-contains the following information:
+Each event describes the state of a method at a particular point in time. There 
+are three types of event: *added*, *changed*, and *deleted*. 
+
+Regardless of type, each event contains the following information:
 
 
 field | description
@@ -36,7 +34,7 @@ start_line | start line of the method at that commit
 end_line | end line of the method at that commit
 
 
-The file analytics.rb contains a set of functions that can be used to
+The file *analytics.rb* contains a set of functions that can be used to
 analyze histories. Here is function which produces a frequency histogram
 of the classes by the number of methods they contain:
 
@@ -48,10 +46,9 @@ of the classes by the number of methods they contain:
   end
 ```
 
-The method takes the list of method events and groups them into bins by the names
-of the classes they reside upon. It then takes the names of all of the methods
-that have existed over the history of that class and counts them. Afterward, it
-uses an array extension method named 'freq' to produce frequencies of those counts.
+This function accepts a list of events and groups them by the names of the classes they are
+associated with. It then uses an array extension method named *freq* to produce frequencies of 
+these counts and returns them as a sorted list.
 
 Let's do that analysis:
 
@@ -60,22 +57,19 @@ Let's do that analysis:
 2.0.0p0 :004 > class_method_count_freq(es)
 ```
 
-The format for
-the histogram is bin-number followed by frequency:
-
 ```ruby
  => [[1, 1393], [2, 937], [3, 576], [4, 442], [5, 371], [6, 253], [7, 208], [8, 176] .. ]
 ```
 
-Method events are created from the repository using the --topo-order flag
-on git log. This ordering puts branches one after another rather than using strict
+Events are created from the repository using the *--topo-order* flag
+on *git log*. This ordering puts branches one after another rather than using strict
 date ordering. This allows us to do simple analyses like seeing how method lengths
 have changed over time without the complications that we would have with strict
-date ordering. Although branch information is disgarded in this 'linear' history,
-you can expect 'runs' of events within branches to be date ordered.
+date ordering. Although branch information is disgarded in this *linear* history,
+you can expect runs of events within branches to be date ordered.
 
 
-# USAGE
+## USAGE
 
 Use of delta-flora is easy. The steps in the description should get you
 started. But, it's important to note that the first time you run
@@ -87,30 +81,31 @@ a file named methodevents.csv in the repository directory. If it exists
 and there are no commits with a later datestamp in the repo, then
 methodevents.csv is assumed to be current and it is loaded. If
 methodevents.csv does not exist or it is out of date, Repository rips the
-repo and produces a methodevents.csv file.
+repo and produces a *methodevents.csv* file.
 
-The phrase *es = Repository.new('some repostory path').events* is a bit of a mouthful,
+
+The phrase *es = Repository.new('some repostory path').events* is a bit verbose, so
 delta-flora supplies a convenience method that has the same effect:
 
 ```ruby
   es = load_events('some repository path')
 ```
 
-# NAMING:
+## NAMING
 
 *Delta Flora* is the name of an album by Hughscore: a group formed by the late
 Hugh Hopper of Soft Machine. The name struck me because it literally means the
-flowering/bountiful mouth of a river. That seemed like a good name for a tool
+flowering/bountiful mouth of a river. It seemed like a good name for a tool
 that produces useful information from repositories. Aside from that, the pun
-on the word `delta' with regard to version control systems was too good to
+on the word *delta* with regard to version control systems was too good to
 pass up.
 
 
-# REQUIREMENTS:
+## REQUIREMENTS
 
 * Ruby 2.0
 
-# LICENSE:
+## LICENSE
 
 (The MIT License)
 
