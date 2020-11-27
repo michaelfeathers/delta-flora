@@ -1,8 +1,7 @@
-= delta-flora
+# delta-flora
 
-* http://github.com/michaelfeathers/delta-flora/
 
-== DESCRIPTION:
+## DESCRIPTION:
 
 Delta-flora is set of classes and functions which enable interactive analysis
 of Ruby code histories in an interactive Ruby shell.
@@ -71,7 +70,7 @@ date ordering. Although branch information is disgarded in this 'linear' history
 you can expect 'runs' of events within branches to be date ordered.
 
 
-== USAGE:
+# USAGE:
 
 Use of delta-flora is easy. The steps in the description should get you
 started. But, it's important to note that the first time you run
@@ -92,7 +91,7 @@ delta-flora supplies a convenience method that has the same effect:
   es = load_events('some repository path')
 ```
 
-== NAMING:
+# NAMING:
 
 `Delta Flora' is the name of an album by Hughscore - a group formed by the late
 Hugh Hopper of Soft Machine. The name struck me because it literally means the
@@ -102,11 +101,11 @@ on the word `delta' with regard to version control systems was too good to
 pass up.
 
 
-== REQUIREMENTS:
+# REQUIREMENTS:
 
 * Ruby 2.0
 
-== LICENSE:
+# LICENSE:
 
 (The MIT License)
 
