@@ -1,7 +1,7 @@
 # delta-flora
 
 
-## DESCRIPTION:
+## DESCRIPTION
 
 Delta-flora is set of classes and functions which enable interactive analysis
 of Ruby code histories in an interactive Ruby shell.
@@ -12,25 +12,29 @@ in a git repo.
 
 Here is an example use of delta-flora in irb:
 
+```ruby
   2.0.0p0 :001 > load 'repository.rb'
   2.0.0p0 :002 > es = Repository.new('/Users/joe-shmoe/Projects/rails').events
+```
 
 The value held in es after this call is an array of `method events'. Each method
 event describes an occurrence in the lifetime of a method. There are three types
 of method event: added, changed, deleted. Regardless of their type, each event
 contains the following information:
 
+
 field | description
 ------|------------
 type | added, changed, or deleted
 commit | sha1 of the git commit for the code change
- date | date of the commit
- file_name | name of the file containing the method
- committer | author of the commit
- class_name | name of the class containing the method
- method_name | name of the method (fully-qualified by class and module name)
- start_line | start line of the method at that commit
- end_line | end line of the method at that commit
+date | date of the commit
+file_name | name of the file containing the method
+committer | author of the commit
+class_name | name of the class containing the method
+method_name | name of the method (fully-qualified by class and module name)
+start_line | start line of the method at that commit
+end_line | end line of the method at that commit
+
 
 The file analytics.rb contains a set of functions that can be used to
 analyze histories. Here is function which produces a frequency histogram
@@ -51,8 +55,9 @@ uses an array extension method named 'freq' to produce frequencies of those coun
 
 Let's do that analysis:
 
-> 2.0.0p0 :003 > load 'analytics.rb'
-> 2.0.0p0 :004 > class_method_count_freq(es)
+``ruby
+2.0.0p0 :003 > load 'analytics.rb'
+2.0.0p0 :004 > class_method_count_freq(es)
 ```
 
 Here are the results for Rails at the time of this writing. The format for
