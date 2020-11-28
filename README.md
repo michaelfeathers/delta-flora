@@ -1,5 +1,4 @@
-# delta-flora
-
+# Delta Flora
 
 ## DESCRIPTION
 
@@ -90,8 +89,8 @@ delta-flora supplies a convenience method that has the same effect:
 ## NAMING
 
 *Delta Flora* is the name of an album by Hughscore: a group formed by the late
-Hugh Hopper of Soft Machine. The name struck me because it literally means the
-flowering/bountiful mouth of a river. It seemed like a good name for a tool
+[Hugh Hopper](https://en.wikipedia.org/wiki/Hugh_Hopper) of [Soft Machine](https://en.wikipedia.org/wiki/Soft_Machine). I chose the name because its literal meaning is *the
+flowering/bountiful mouth of a river*. It seemed like a good name for a tool
 that produces useful information from repositories. Aside from that, the pun
 on the word *delta* with regard to version control systems was too good to
 pass up.
@@ -99,7 +98,7 @@ pass up.
 
 ## REQUIREMENTS
 
-* Ruby 2.0 or greater
+* Ruby 2.6 or greater
 
 ## LICENSE
 
